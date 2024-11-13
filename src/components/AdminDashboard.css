@@ -1,0 +1,35 @@
+.admin-dashboard {
+    display: flex;
+    height: 100vh; /* Full height */
+    font-family: Arial, sans-serif;
+  }
+  
+  .sidebar {
+    background-color: #add8e6;
+    padding: 20px;
+    width: 200px;
+  }
+  
+  .sidebar a {
+    color: #800080;
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+  }
+  
+  .sidebar a:hover {
+    text-decoration: underline;
+  }
+  
+  .main-content {
+    background-color: #ccffcc;
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
+  }
+  
+  h2 {
+    text-align: center;
+    color: #000;
+  }
+  

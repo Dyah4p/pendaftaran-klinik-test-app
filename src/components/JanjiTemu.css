@@ -1,0 +1,84 @@
+.janji-temu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Tinggi penuh */
+    background-color: #f0f0f0; /* Warna latar belakang */
+    background-image: url('../img/halaman_user.png'); /* Path gambar latar belakang */
+    background-size: cover; /* Menyesuaikan gambar dengan ukuran layar */
+    background-repeat: no-repeat; /* Tidak mengulangi gambar */
+    background-position: center center; /* Memposisikan gambar di tengah */
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px; /* Ukuran font lebih besar */
+  }
+  
+  form {
+    background-color: rgba(255, 255, 255, 0.9); /* Latar belakang semi transparan */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Lebar maksimum */
+    height: auto; /* Tambahkan ini untuk menyesuaikan tinggi form secara otomatis */
+    max-height: 60vh; /* Batasi tinggi maksimum form agar tidak terlalu tinggi */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
+    margin-bottom: 20px; /* Jarak antara form dan tombol back */
+  }
+  
+  label {
+    margin: 10px 0 5px;
+    color: #555;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .confirm-button {
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 5px 10px; /* Ukuran kecil */
+    border-radius: 4px;
+    border: none;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px; /* Ukuran font yang lebih kecil */
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -1,0 +1,51 @@
+.user-dashboard {
+  display: flex;
+  height: 100vh; /* Tinggi penuh */
+  background-image: url('../img/halaman_user.png'); /* Path gambar latar belakang */
+  background-size: cover; /* Menyesuaikan gambar dengan ukuran layar */
+  background-repeat: no-repeat; /* Tidak mengulangi gambar */
+  background-position: center center; /* Memposisikan gambar di tengah */
+}
+
+.sidebar {
+  background-color: #5ad3fc;
+  padding: 20px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar a {
+  color: #800080;
+  margin: 10px 0;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  background-color: rgba(149, 215, 149, 0.9); /* Transparansi pada konten utama */
+  flex-grow: 1;
+  padding: 40px;
+  overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px; /* Tambahkan radius pada border */
+}
+
+h2 {
+  color: #000;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+p {
+  color: #333;
+  font-size: 18px;
+  text-align: center;
+}
