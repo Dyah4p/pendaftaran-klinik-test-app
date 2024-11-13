@@ -18,7 +18,7 @@ const ProfilUser = () => {
   const handleLogout = () => {
     localStorage.removeItem('userProfile');
     alert('Anda telah keluar.');
-    window.location.href = '/login'; // Arahkan ke halaman login setelah logout
+    window.location.href = '/LoginPage'; // Arahkan ke halaman login setelah logout
   };
 
   const handleChange = (e) => {

@@ -50,13 +50,13 @@ const KelolaJadwal = () => {
   return (
     <div className="kelola-jadwal">
       <div className="sidebar">
-        <Link to="/admin-dashboard">Dashboard</Link>
-        <Link to="/kelola-dokter">Kelola Dokter</Link>
-        <Link to="/kelola-poli">Kelola Poli</Link>
-        <Link to="/kelola-pasien">Kelola Data Pasien</Link>
-        <Link to="/kelola-jadwal">Kelola Jadwal</Link>
-        <Link to="/konfirmasi-janji">Konfirmasi Janji Temu</Link>
-        <Link to="/riwayat-pasien">Riwayat Pasien</Link>
+        <Link to="/Admindashboard">Dashboard</Link>
+        <Link to="/KelolaDokter">Kelola Dokter</Link>
+        <Link to="/KelolaPoli">Kelola Poli</Link>
+        <Link to="/KelolaPasien">Kelola Data Pasien</Link>
+        <Link to="/KelolaJadwal">Kelola Jadwal</Link>
+        <Link to="/KonfirmasiJanji">Konfirmasi Janji Temu</Link>
+        <Link to="/RiwayatPasien">Riwayat Pasien</Link>
       </div>
       <div className="main-content">
         <h2>Kelola Jadwal</h2>

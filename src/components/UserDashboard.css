@@ -1,51 +1,71 @@
 .user-dashboard {
   display: flex;
-  height: 100vh; /* Tinggi penuh */
-  background-image: url('../img/halaman_user.png'); /* Path gambar latar belakang */
-  background-size: cover; /* Menyesuaikan gambar dengan ukuran layar */
-  background-repeat: no-repeat; /* Tidak mengulangi gambar */
-  background-position: center center; /* Memposisikan gambar di tengah */
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-image: url('../img/halaman_user.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
-.sidebar {
-  background-color: #5ad3fc;
-  padding: 20px;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar a {
-  color: #800080;
-  margin: 10px 0;
-  text-decoration: none;
-}
-
-.sidebar a:hover {
-  text-decoration: underline;
-}
-
-.main-content {
-  background-color: rgba(149, 215, 149, 0.9); /* Transparansi pada konten utama */
+.main-content-user {
   flex-grow: 1;
   padding: 40px;
-  overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: transparent; /* Menghilangkan warna hijau */
+}
+
+.main-content h2 {
+  color: #007BFF;
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+}
+
+.main-content p {
+  color: #333;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 30px; /* Menambah jarak bawah */
+}
+
+.option-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.option-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border-radius: 10px; /* Tambahkan radius pada border */
-}
-
-h2 {
-  color: #000;
-  margin-bottom: 20px;
-  font-size: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
   text-align: center;
+  width: 150px;
+  transition: transform 0.3s;
 }
 
-p {
+.option-card:hover {
+  transform: scale(1.05);
+}
+
+.option-card img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.option-card p {
+  margin: 0;
+  font-size: 16px;
   color: #333;
-  font-size: 18px;
-  text-align: center;
 }

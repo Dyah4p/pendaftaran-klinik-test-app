@@ -1,16 +1,16 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AdminDashboard from './components/AdminDashboard';
+import AdminDashboard from './components/Admin/AdminDashboard';
 import UserDashboard from './components/UserDashboard';
-import KelolaDokter from './components/KelolaDokter';
-import KelolaPoli from './components/KelolaPoli';
-import KelolaPasien from './components/KelolaPasien';
-import KelolaJadwal from './components/KelolaJadwal';
-import KonfirmasiJanji from './components/KonfirmasiJanji';
+import KelolaDokter from './components/Admin/KelolaDokter';
+import KelolaPoli from './components/Admin/KelolaPoli';
+import KelolaPasien from './components/Admin/KelolaPasien';
+import KelolaJadwal from './components/Admin/KelolaJadwal';
+import KonfirmasiJanji from './components/Admin/KonfirmasiJanji';
 import RiwayatPasien from './components/RiwayatPasien';
 import LoginPage from './components/LoginPage';
-import RegisterAdmin from './components/RegisterAdmin';
+import RegisterAdmin from './components/Admin/RegisterAdmin';
 import RegisterUser from './components/RegisterUser'
 import PilihPoli from './components/PilihPoli';
 import PilihDokter from './components/PilihDokter';

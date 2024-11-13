@@ -9,9 +9,9 @@ const PilihDokter = () => {
 
   useEffect(() => {
     const dokterData = [
-      { id: 1, poliId: 1, nama: 'Dr. Dyah', image: 'https://via.placeholder.com/150' },
-      { id: 2, poliId: 2, nama: 'Dr. Garin', image: 'https://via.placeholder.com/150' },
-      { id: 3, poliId: 3, nama: 'Dr. Claudea', image: 'https://via.placeholder.com/150' }
+      { id: 1, poliId: 1, nama: 'Dr. Dyah', image: '/img/dyah.png' },
+      { id: 2, poliId: 2, nama: 'Dr. Garin', image: '/img/garin.jpg' },
+      { id: 3, poliId: 3, nama: 'Dr. Claudea', image: '/img/claudea.jpg' }
     ];
     localStorage.setItem('dokters', JSON.stringify(dokterData));
     setDokters(dokterData.filter(dokter => dokter.poliId === parseInt(poliId)));
@@ -22,7 +22,7 @@ const PilihDokter = () => {
   };
 
   const handleBackToDashboard = () => {
-    navigate('/user-dashboard');
+    navigate('/UserDashboard');
   };
 
   return (

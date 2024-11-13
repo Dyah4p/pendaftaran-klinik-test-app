@@ -8,14 +8,13 @@ const PilihJadwal = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const defaultJadwals = [
+    const jadwalData = [
       { id: 1, dokterId: 1, tanggal: '2024-01-01', jam: '10:00' },
       { id: 2, dokterId: 2, tanggal: '2024-01-02', jam: '14:00' },
       { id: 3, dokterId: 3, tanggal: '2024-01-03', jam: '09:00' }
     ];
-    const storedJadwals = JSON.parse(localStorage.getItem('jadwals')) || defaultJadwals;
-    localStorage.setItem('jadwals', JSON.stringify(storedJadwals));
-    setJadwals(storedJadwals.filter(jadwal => jadwal.dokterId === parseInt(dokterId)));
+    localStorage.setItem('jadwals', JSON.stringify(jadwalData));
+    setJadwals(jadwalData.filter(jadwal => jadwal.dokterId === parseInt(dokterId)));
   }, [dokterId]);
 
   const handleJadwalSelect = (jadwalId) => {

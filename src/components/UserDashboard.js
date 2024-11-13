@@ -5,16 +5,23 @@ import './UserDashboard.css';
 const UserDashboard = () => {
   return (
     <div className="user-dashboard">
-      <div className="sidebar">
-        <Link to="/UserDashboard">Dashboard User</Link>
-        <Link to="/PilihPoli">Pilih Poli</Link>
-        <Link to="/JanjiTemu">Janji Temu</Link>
-        <Link to="/ProfilUser">Profil User</Link>
-        <Link to="/PilihDokter">Pilih Dokter</Link>
-      </div>
-      <div className="main-content">
-        <h2>Dashboard User</h2>
-        <p>Selamat datang di dashboard user. Silakan pilih menu di sebelah kiri untuk mengelola data.</p>
+      <div className="main-content-user">
+        <h2>Selamat Datang di Menu User</h2>
+        <p>Pilih salah satu ikon untuk masuk ke menu yang diinginkan dan isi data diri anda dimenu profil.</p>
+        <div className="option-container">
+          <Link to="/UserDashboard" className="option-card">
+            <img src="/img/Logo Klinik.png" alt="DashboardUser" />
+            <p>Dashboard User</p>
+          </Link>
+          <Link to="/PilihPoli" className="option-card">
+            <img src="/img/gambar catatan.png" alt="Pilih Poli" />
+            <p>Pilih Poli</p>
+          </Link>
+          <Link to="/ProfilUser" className="option-card">
+            <img src="/img/gambar tangan.png" alt="Profil" />
+            <p>Profil</p>
+          </Link>
+        </div>
       </div>
     </div>
   );
