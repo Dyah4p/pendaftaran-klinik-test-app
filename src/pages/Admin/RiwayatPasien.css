@@ -1,0 +1,112 @@
+.riwayat-pasien {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #add8e6;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.sidebar a {
+  color: #333;
+  margin: 10px 0;
+  text-decoration: none;
+  font-size: 18px;
+  display: block;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: #ccffcc;
+}
+
+.main-content h2 {
+  color: #007BFF;
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: left;
+}
+
+.main-content div {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.main-content input[type="text"],
+.main-content input[type="date"] {
+  padding: 8px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+tbody td button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+tbody td button:first-child {
+  background-color: #007BFF;
+  color: #fff;
+}
+
+tbody td button:first-child:hover {
+  background-color: #0056b3;
+}
+
+tbody td button:last-child {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+tbody td button:last-child:hover {
+  background-color: #c82333;
+}

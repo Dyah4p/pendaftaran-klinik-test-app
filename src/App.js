@@ -1,23 +1,23 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import UserDashboard from './components/UserDashboard';
-import KelolaDokter from './components/Admin/KelolaDokter';
-import KelolaPoli from './components/Admin/KelolaPoli';
-import KelolaPasien from './components/Admin/KelolaPasien';
-import KelolaJadwal from './components/Admin/KelolaJadwal';
-import KonfirmasiJanji from './components/Admin/KonfirmasiJanji';
-import RiwayatPasien from './components/RiwayatPasien';
-import LoginPage from './components/LoginPage';
-import RegisterAdmin from './components/Admin/RegisterAdmin';
-import RegisterUser from './components/RegisterUser'
-import PilihPoli from './components/PilihPoli';
-import PilihDokter from './components/PilihDokter';
-import PilihJadwal from './components/PilihJadwal';
-import JanjiTemu from './components/JanjiTemu';
-import ProfilUser from './components/ProfilUser';
-
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import UserDashboard from './pages/Pasien/UserDashboard';
+import KelolaDokter from './pages/Admin/KelolaDokter';
+import KelolaPoli from './pages/Admin/KelolaPoli';
+import KelolaPasien from './pages/Admin/KelolaPasien';
+import KelolaJadwal from './pages/Admin/KelolaJadwal';
+import KonfirmasiJanji from './pages/Admin/KonfirmasiJanji';
+import RiwayatPasien from './pages/Admin/RiwayatPasien';
+import LoginPage from './pages/Pasien/LoginPage';
+import RegisterAdmin from './pages/Admin/RegisterAdmin';
+import RegisterUser from './pages/Pasien/RegisterUser'
+import PilihPoli from './pages/Pasien/PilihPoli';
+import PilihDokter from './pages/Pasien/PilihDokter';
+import PilihJadwal from './pages/Pasien/PilihJadwal';
+import JanjiTemu from './pages/Pasien/JanjiTemu';
+import ProfilUser from './pages/Pasien/ProfilUser';
+import UserHistory from './pages/Pasien/UserHistory';
 
 function App() {
   return (
@@ -39,6 +39,7 @@ function App() {
           <Route path="/PilihJadwal/:dokterId" element={<PilihJadwal />} />
           <Route path="/JanjiTemu/:jadwalId" element={<JanjiTemu />} />
           <Route path="/ProfilUser" element={<ProfilUser />} />
+          <Route path="/UserHistory" element={<UserHistory />} />
           <Route path="/" element={<LoginPage />} />
           </Routes>
     </Router>

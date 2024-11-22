@@ -1,0 +1,46 @@
+.profil-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Ubah dari center ke flex-start */
+  height: 100vh;
+  background-image: url('../../../public/img/Halaman verifikasi.png'); /* Sesuaikan dengan path gambar Anda */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.profil-user h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.profil-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 300px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profil-info label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.profil-info input {
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  height: 30px; /* Ubah tinggi input */
+  margin-bottom: 10px; /* Tambahkan jarak antara input */
+}

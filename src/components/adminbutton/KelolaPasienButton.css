@@ -1,0 +1,14 @@
+.kelola-pasien-button {
+    padding: 10px 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .kelola-pasien-button:hover {
+    background-color: #218838;
+  }
+  

@@ -1,0 +1,13 @@
+.kelola-jadwal-button {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .kelola-jadwal-button:hover {
+    background-color: #0056b3;
+  }
+  
