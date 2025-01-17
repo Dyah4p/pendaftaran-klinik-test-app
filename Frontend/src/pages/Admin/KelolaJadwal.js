@@ -1,46 +1,107 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './KelolaJadwal.css';
-import KelolaJadwalButton from '../../components/adminbutton/KelolaJadwalButton'; // Impor komponen tombol
+import KelolaJadwalButton from '../../components/adminbutton/KelolaJadwalButton';
 
 const KelolaJadwal = () => {
   const [jadwals, setJadwals] = useState([]);
+  const [dokters, setDokters] = useState([]); // Menyimpan data dokter
   const [dokter, setDokter] = useState('');
   const [tanggal, setTanggal] = useState('');
   const [jam, setJam] = useState('');
   const [jadwalEdit, setJadwalEdit] = useState(null);
 
+  // Mengambil data dokter dari backend
   useEffect(() => {
-    const storedJadwals = JSON.parse(localStorage.getItem('jadwals')) || [];
-    setJadwals(storedJadwals);
+    fetch('http://localhost:4000/api/doctors')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          setDokters(data.data); // Menyimpan data dokter
+        } else {
+          console.error('Data dokter tidak valid', data);
+        }
+      })
+      .catch((error) => console.error('Error fetching doctors:', error));
   }, []);
-  
+
+  // Mengambil data jadwal hanya setelah data dokter berhasil diambil
   useEffect(() => {
-    localStorage.setItem('jadwals', JSON.stringify(jadwals));
-  }, [jadwals]);
+    if (dokters.length > 0) {
+      fetch('http://localhost:4000/api/jadwals')
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success' && Array.isArray(data.data)) {
+            setJadwals(data.data);
+          } else {
+            console.error('Data jadwal tidak valid', data);
+          }
+        })
+        .catch((error) => console.error('Error fetching jadwals:', error));
+    }
+  }, [dokters]); // Fetch jadwal hanya ketika dokters telah terisi
 
+  // Fungsi untuk menambahkan jadwal
   const tambahJadwal = () => {
-    const jadwalBaru = { id: Date.now(), dokter, tanggal, jam, created_at: new Date().toISOString() };
-    setJadwals([...jadwals, jadwalBaru]);
-    setDokter('');
-    setTanggal('');
-    setJam('');
+    const jadwalBaru = { dokter_id: dokter, tanggal, jam };
+
+    fetch('http://localhost:4000/api/jadwals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(jadwalBaru),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'success') {
+          setJadwals([...jadwals, data.data]);
+          setDokter('');
+          setTanggal('');
+          setJam('');
+        } else {
+          console.error('Error adding jadwal:', data.message);
+        }
+      })
+      .catch((error) => console.error('Error adding jadwal:', error));
   };
 
+  // Fungsi untuk mengupdate jadwal
   const updateJadwal = () => {
-    const jadwalsDiperbarui = jadwals.map(jadwal =>
-      jadwal.id === jadwalEdit.id ? { ...jadwal, dokter, tanggal, jam, created_at: jadwalEdit.created_at } : jadwal
-    );
-    setJadwals(jadwalsDiperbarui);
-    setJadwalEdit(null);
-    setDokter('');
-    setTanggal('');
-    setJam('');
+    const jadwalUpdated = { dokter_id: dokter, tanggal, jam };
+
+    fetch(`http://localhost:4000/api/jadwals/${jadwalEdit.jadwal_id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(jadwalUpdated),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'success') {
+          const updatedJadwals = jadwals.map((j) =>
+            j.jadwal_id === jadwalEdit.jadwal_id
+              ? { ...j, dokter_id: dokter, tanggal, jam }
+              : j
+          );
+          setJadwals(updatedJadwals);
+          setJadwalEdit(null);
+          setDokter('');
+          setTanggal('');
+          setJam('');
+        } else {
+          console.error('Error updating jadwal:', data.message);
+        }
+      })
+      .catch((error) => console.error('Error updating jadwal:', error));
   };
 
-  const hapusJadwal = (id) => {
-    const jadwalsDiperbarui = jadwals.filter(jadwal => jadwal.id !== id);
-    setJadwals(jadwalsDiperbarui);
+  // Fungsi untuk menghapus jadwal
+  const hapusJadwal = (jadwal_id) => {
+    fetch(`http://localhost:4000/api/jadwals/${jadwal_id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setJadwals(jadwals.filter((j) => j.jadwal_id !== jadwal_id));
+      })
+      .catch((error) => console.error('Error deleting jadwal:', error));
   };
 
   return (
@@ -58,11 +119,17 @@ const KelolaJadwal = () => {
         <h2>Kelola Jadwal</h2>
         <div className="form-group">
           <label>Dokter:</label>
-          <input
-            type="text"
+          <select
             value={dokter}
             onChange={(e) => setDokter(e.target.value)}
-          />
+          >
+            <option value="">Pilih Dokter</option>
+            {dokters.map((dokterItem) => (
+              <option key={dokterItem.dokter_id} value={dokterItem.dokter_id}>
+                {dokterItem.nama}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label>Tanggal:</label>
@@ -80,7 +147,9 @@ const KelolaJadwal = () => {
             onChange={(e) => setJam(e.target.value)}
           />
         </div>
+
         <KelolaJadwalButton jadwalEdit={jadwalEdit} tambahJadwal={tambahJadwal} updateJadwal={updateJadwal} />
+
         <table className="table">
           <thead>
             <tr>
@@ -92,20 +161,26 @@ const KelolaJadwal = () => {
             </tr>
           </thead>
           <tbody>
-            {jadwals.map(jadwal => (
-              <tr key={jadwal.id}>
-                <td>{jadwal.id}</td>
-                <td>{jadwal.dokter}</td>
+            {jadwals.map((jadwal) => (
+              <tr key={jadwal.jadwal_id}>
+                <td>{jadwal.jadwal_id}</td>
+                <td>
+                  {dokters.find((dokterItem) => dokterItem.dokter_id === jadwal.dokter_id)?.nama || 'Dokter Tidak Ditemukan'}
+                </td>
                 <td>{jadwal.tanggal}</td>
                 <td>{jadwal.jam}</td>
                 <td>
-                  <button onClick={() => {
-                    setJadwalEdit(jadwal);
-                    setDokter(jadwal.dokter);
-                    setTanggal(jadwal.tanggal);
-                    setJam(jadwal.jam);
-                  }}>Edit</button>
-                  <button onClick={() => hapusJadwal(jadwal.id)}>Hapus</button>
+                  <button
+                    onClick={() => {
+                      setJadwalEdit(jadwal);
+                      setDokter(jadwal.dokter_id);
+                      setTanggal(jadwal.tanggal);
+                      setJam(jadwal.jam);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button onClick={() => hapusJadwal(jadwal.jadwal_id)}>Hapus</button>
                 </td>
               </tr>
             ))}

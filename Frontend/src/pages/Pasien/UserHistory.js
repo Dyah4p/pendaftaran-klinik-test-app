@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext'; // Mengambil user context
 import { usePoli } from '../../contexts/PoliContext'; // Mengambil PoliContext
-import BackButton from '../../components/pasienbutton/BackButton';
+import BackButton from '../../components/pasienbutton/BackButton'; // Impor komponen tombol kembali
+import './UserHistory.css';
 
 const UserHistory = () => {
   const { user } = useUser();
   const { polies, error: poliError } = usePoli();
   const [histories, setHistories] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [schedule, setSchedule] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -26,7 +28,7 @@ const UserHistory = () => {
       try {
         const response = await fetch(`http://localhost:4000/api/doctors`);
         const data = await response.json();
-        if (data.success) {
+        if (data.status === 'success') {
           setDoctors(data.data);
           console.log('Data dokter berhasil diambil:', data.data);
         } else {
@@ -42,42 +44,64 @@ const UserHistory = () => {
     fetchDoctors();
   }, []);
 
+  // Fetch data jadwal
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/jadwals`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          setSchedule(data.data);
+          console.log('Data jadwal berhasil diambil:', data.data);
+        } else {
+          setError(data.message);
+          console.error('Gagal mengambil data jadwal:', data.message);
+        }
+      } catch (error) {
+        setError(`Error mengambil data jadwal: ${error.message}`);
+        console.error('Error mengambil data jadwal:', error.message);
+      }
+    };
+
+    fetchSchedule();
+  }, []);
+
   // Fetch riwayat janji temu
   useEffect(() => {
     if (userId) {
       const fetchHistory = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/api/appointments`);
-          
+          const response = await fetch(`http://localhost:4000/api/appointments/history`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId }),
+          });
+
           if (!response.ok) {
             setError(`HTTP Error: ${response.status}`);
-            console.error(`HTTP Error: ${response.status}`);
             return;
           }
 
           const data = await response.json();
-          console.log('Data riwayat janji temu:', data); // Memeriksa struktur data
 
-          if (data.success) {
+          if (data.status === 'success') {
             setHistories(data.data);
           } else {
             setError(data.message || 'Data riwayat janji temu tidak ditemukan');
-            console.error('Gagal mengambil riwayat janji temu:', data.message);
           }
         } catch (error) {
           setError(`Error mengambil riwayat janji temu: ${error.message}`);
-          console.error('Error mengambil riwayat janji temu:', error.message);
         }
       };
 
       fetchHistory();
     } else {
       setError('User ID tidak tersedia.');
-      console.log('User ID tidak ditemukan:', userId);
     }
   }, [userId]);
 
-  // Aksi untuk kembali ke dashboard
   const handleBackToDashboard = () => {
     navigate('/UserDashboard');
   };
@@ -91,33 +115,24 @@ const UserHistory = () => {
       <div className="history-container">
         {histories.length > 0 ? (
           histories.map((history) => {
-            const poli = polies.find((poli) => poli.id === history.polis_id);
-            const dokter = doctors.find((dokter) => dokter.id === history.dokter_id);
-            const dokterNama = dokter ? dokter.nama : 'Dokter tidak ditemukan';
+            // Mengambil data poli, dokter, dan jadwal berdasarkan ID
+            const poli = polies ? polies.find((poli) => poli.id === history.polis_id) : null;
+            const dokter = doctors ? doctors.find((dokter) => dokter.id === history.dokter_id) : null;
+            const jadwal = schedule ? schedule.find((jadwal) => jadwal.id === history.jadwal_id) : null;
 
-            // Log untuk memeriksa apakah poli, dokter, email, dan jadwal ditemukan
-            console.log('Riwayat Janji Temu:', history);
-            if (!poli) {
-              console.log('Poli tidak ditemukan untuk ID:', history.polis_id);
-            }
-            if (!dokter) {
-              console.log('Dokter tidak ditemukan untuk ID:', history.dokter_id);
-            }
-            console.log('Email:', history.email || 'Email tidak ditemukan');
-            console.log('Tanggal Jadwal:', history.tanggal_jadwal || 'Tanggal tidak ditemukan');
-            console.log('Jam Jadwal:', history.jam || 'Jam tidak ditemukan');
-            console.log('Status:', history.status || 'Status tidak ditemukan');
+            const dokterNama = dokter ? dokter.nama : 'Dokter tidak ditemukan';
+            const poliNama = poli ? poli.nama : 'Poli tidak ditemukan';
+            const jadwalNama = jadwal ? `${jadwal.tanggal} ${jadwal.jam}` : 'Jadwal tidak ditemukan';
 
             return (
-              <div className="history-item" key={history.id}>
+              <div className="history-item" key={history.appointment_id}>
                 <p><strong>Nama:</strong> {history.nama || 'Nama tidak ditemukan'}</p>
-                <p><strong>Tanggal Lahir:</strong> {history.tanggal_lahir || 'Tanggal Lahir tidak ditemukan'}</p>
-                <p><strong>Nomor Telepon:</strong> {history.nomor_telepon || 'Nomor Telepon tidak ditemukan'}</p>
-                <p><strong>Email:</strong> {history.email || 'Email tidak ditemukan'}</p>
-                <p><strong>Jadwal:</strong> {history.tanggal_jadwal || 'Tanggal Jadwal tidak ditemukan'} {history.jam || 'Jam tidak ditemukan'}</p>
+                <p><strong>Tanggal Lahir:</strong> {history.tanggal_lahir}</p>
+                <p><strong>Nomor Telepon:</strong> {history.nomor_telepon}</p>
+                <p><strong>Email:</strong> {history.email}</p>
+                <p><strong>Jadwal:</strong> {jadwalNama}</p>
                 <p><strong>Dokter:</strong> {dokterNama}</p>
-                <p><strong>Poli:</strong> {poli ? poli.nama : 'Poli tidak ditemukan'}</p>
-                <p><strong>Status:</strong> {history.status || 'Status tidak ditemukan'}</p>
+                <p><strong>Poli:</strong> {poliNama}</p>
               </div>
             );
           })
@@ -126,7 +141,8 @@ const UserHistory = () => {
         )}
       </div>
 
-      <BackButton onClick={handleBackToDashboard} />
+      {/* Tombol kembali */}
+      <BackButton handleBackToDashboard={handleBackToDashboard} />
     </div>
   );
 };

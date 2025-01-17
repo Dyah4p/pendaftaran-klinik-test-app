@@ -12,7 +12,7 @@ class UserProfileController {
 
     static async getUserProfile(req, res) {
         try {
-            const userProfile = await UserProfile.findByUserId(req.params.user_id); // Menggunakan user_id untuk pencarian
+            const userProfile = await UserProfile.findByUserId(req.params.user_id);
             if (!userProfile) {
                 return res.status(404).json({ status: 'error', message: 'User profile not found' });
             }
@@ -38,12 +38,26 @@ class UserProfileController {
 
     static async updateUserProfile(req, res) {
         try {
-            const { user_id, nama, tanggal_lahir, nomor_telepon, email, alamat, created_at } = req.body;
-            const updated = await UserProfile.update(req.params.user_id, { user_id, nama, tanggal_lahir, nomor_telepon, email, alamat, created_at });
-            if (!updated) {
+            const { nama, tanggal_lahir, nomor_telepon, email, alamat } = req.body;
+
+            // Perbarui data di database
+            const updatedUserProfile = await UserProfile.update(req.params.user_id, {
+                nama,
+                tanggal_lahir,
+                nomor_telepon,
+                email,
+                alamat,
+            });
+
+            if (!updatedUserProfile) {
                 return res.status(404).json({ status: 'error', message: 'User profile not found' });
             }
-            res.json({ status: 'success', message: 'User profile updated successfully' });
+
+            res.json({
+                status: 'success',
+                message: 'User profile updated successfully',
+                data: updatedUserProfile, // Data terbaru dikembalikan
+            });
         } catch (error) {
             res.status(500).json({ status: 'error', message: error.message });
         }

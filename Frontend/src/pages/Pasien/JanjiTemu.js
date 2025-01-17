@@ -66,14 +66,8 @@ const JanjiTemu = () => {
       jadwal_id,
       dokter_id,
       polis_id: contextPolisId, // Menggunakan polis_id dari context
-      status: 'pending',
+      status: 'pending', // Status default adalah "pending"
     };
-
-    // Pengecekan data janji temu sebelum mengirim
-    if (!janjiTemu.user_id || !janjiTemu.nama || !janjiTemu.tanggal_lahir || !janjiTemu.nomor_telepon || !janjiTemu.email || !janjiTemu.jadwal_id || !janjiTemu.dokter_id || !janjiTemu.polis_id) {
-      setError('Data janji temu tidak lengkap');
-      return;
-    }
 
     try {
       const response = await fetch('http://localhost:4000/api/appointments', {
@@ -84,7 +78,7 @@ const JanjiTemu = () => {
 
       const data = await response.json();
       if (data.status === 'success') {
-        navigate('/UserHistory');
+        navigate('/UserHistory'); // Redirect ke halaman riwayat pengguna
       } else {
         setError(data.message);
       }

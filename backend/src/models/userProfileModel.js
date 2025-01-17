@@ -10,11 +10,10 @@ class UserProfile {
         }
     }
 
-    // Menggunakan user_id untuk mencari profil pengguna
     static async findByUserId(user_id) {
         try {
             const [rows] = await db.query('SELECT * FROM user_profiles WHERE user_id = ?', [user_id]);
-            return rows[0]; // Mengembalikan objek pertama jika ditemukan
+            return rows[0];
         } catch (error) {
             throw error;
         }
@@ -34,11 +33,13 @@ class UserProfile {
 
     static async update(user_id, data) {
         try {
-            const [result] = await db.query(
-                'UPDATE user_profiles SET user_id = ?, nama = ?, tanggal_lahir = ?, nomor_telepon = ?, email = ?, alamat = ?, created_at = ? WHERE user_id = ?',
-                [data.user_id, data.nama, data.tanggal_lahir, data.nomor_telepon, data.email, data.alamat, data.created_at, user_id]
-            ); 
-            return result.affectedRows > 0;
+            await db.query(
+                'UPDATE user_profiles SET nama = ?, tanggal_lahir = ?, nomor_telepon = ?, email = ?, alamat = ?',
+                [data.nama, data.tanggal_lahir, data.nomor_telepon, data.email, data.alamat, new Date(), user_id]
+            );
+
+            // Ambil data terbaru setelah pembaruan
+            return await this.findByUserId(user_id);
         } catch (error) {
             throw error;
         }

@@ -1,57 +1,93 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './KelolaPasien.css';
-import KelolaPasienButton from '../../components/adminbutton/KelolaPasienButton'; // Impor komponen tombol
+import KelolaPasienButton from '../../components/adminbutton/KelolaPasienButton';
 
 const KelolaPasien = () => {
   const [pasien, setPasien] = useState([]);
   const [nama, setNama] = useState('');
-  const [tanggalLahir, setTanggalLahir] = useState('');
+  const [alamat, setAlamat] = useState('');
   const [nomorTelepon, setNomorTelepon] = useState('');
   const [email, setEmail] = useState('');
-  const [alamat, setAlamat] = useState('');
+  const [tanggalLahir, setTanggalLahir] = useState('');
   const [pasienEdit, setPasienEdit] = useState(null);
 
+  // Fetch data pasien dari backend
   useEffect(() => {
-    const storedPasien = JSON.parse(localStorage.getItem('dataPasien')) || [];
-    setPasien(storedPasien);
-    console.log('Data pasien yang diambil di admin:', storedPasien);
+    fetch('http://localhost:4000/api/user_profiles')
+      .then((response) => response.json())
+      .then((data) => {
+        // Pastikan bahwa data dan data.data ada, dan data.data adalah array
+        if (data && data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
+          setPasien(data.data); // Menyimpan data pasien
+        } else {
+          console.error('Data pasien tidak valid', data);
+        }
+      })
+      .catch((error) => console.error('Error fetching pasien:', error));
   }, []);
+  
 
-  useEffect(() => {
-    localStorage.setItem('dataPasien', JSON.stringify(pasien));
-    console.log('Data pasien yang disimpan:', pasien);
-  }, [pasien]);
-
+  // Fungsi untuk menambahkan pasien
   const tambahPasien = () => {
-    const pasienBaru = { id: Date.now(), nama, tanggalLahir, nomorTelepon, email, alamat, created_at: new Date().toISOString() };
-    setPasien([...pasien, pasienBaru]);
-    setNama('');
-    setTanggalLahir('');
-    setNomorTelepon('');
-    setEmail('');
-    setAlamat('');
-    console.log('Pasien baru ditambahkan:', pasienBaru);
+    const pasienBaru = { nama, alamat, nomorTelepon, email, tanggalLahir };
+
+    fetch('http://localhost:4000/api/user_profiles/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pasienBaru),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setPasien([...pasien, data.pasien]);
+          setNama('');
+          setAlamat('');
+          setNomorTelepon('');
+          setEmail('');
+          setTanggalLahir('');
+        } else {
+          console.error('Error adding pasien:', data.message);
+        }
+      })
+      .catch((error) => console.error('Error adding pasien:', error));
   };
 
+  // Fungsi untuk mengupdate pasien
   const updatePasien = () => {
-    const pasienDiperbarui = pasien.map(p =>
-      p.id === pasienEdit.id ? { ...p, nama, tanggalLahir, nomorTelepon, email, alamat, created_at: pasienEdit.created_at } : p
-    );
-    setPasien(pasienDiperbarui);
-    setPasienEdit(null);
-    setNama('');
-    setTanggalLahir('');
-    setNomorTelepon('');
-    setEmail('');
-    setAlamat('');
-    console.log('Pasien diupdate:', pasienDiperbarui);
+    const pasienUpdated = { nama, alamat, nomorTelepon, email, tanggalLahir };
+
+    fetch(`http://localhost:4000/api/user_profiles/update/${pasienEdit.id_profil}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pasienUpdated),
+    })
+      .then(() => {
+        const updatedPasien = pasien.map((p) =>
+          p.id_profil === pasienEdit.id_profil
+            ? { ...p, nama, alamat, nomorTelepon, email, tanggalLahir }
+            : p
+        );
+        setPasien(updatedPasien);
+        setPasienEdit(null);
+        setNama('');
+        setAlamat('');
+        setNomorTelepon('');
+        setEmail('');
+        setTanggalLahir('');
+      })
+      .catch((error) => console.error('Error updating pasien:', error));
   };
 
-  const hapusPasien = (id) => {
-    const pasienDiperbarui = pasien.filter(p => p.id !== id);
-    setPasien(pasienDiperbarui);
-    console.log('Pasien dihapus, ID:', id);
+  // Fungsi untuk menghapus pasien
+  const hapusPasien = (id_profil) => {
+    fetch(`http://localhost:4000/api/user_profiles/delete/${id_profil}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setPasien(pasien.filter((p) => p.id_profil !== id_profil));
+      })
+      .catch((error) => console.error('Error deleting pasien:', error));
   };
 
   return (
@@ -68,59 +104,83 @@ const KelolaPasien = () => {
       <div className="main-content">
         <h2>Kelola Data Pasien</h2>
         <div className="form-group">
-          <label>Nama:</label>
-          <input type="text" value={nama} onChange={(e) => setNama(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Tanggal Lahir:</label>
-          <input type="date" value={tanggalLahir} onChange={(e) => setTanggalLahir(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Nomor Telepon:</label>
-          <input type="text" value={nomorTelepon} onChange={(e) => setNomorTelepon(e.target.value)} />
-        </div>
-        <div className="form-group">
-          <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <label>Nama Pasien:</label>
+          <input
+            type="text"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+          />
         </div>
         <div className="form-group">
           <label>Alamat:</label>
-          <input type="text" value={alamat} onChange={(e) => setAlamat(e.target.value)} />
+          <input
+            type="text"
+            value={alamat}
+            onChange={(e) => setAlamat(e.target.value)}
+          />
         </div>
+        <div className="form-group">
+          <label>No. Telepon:</label>
+          <input
+            type="text"
+            value={nomorTelepon}
+            onChange={(e) => setNomorTelepon(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Tanggal Lahir:</label>
+          <input
+            type="date"
+            value={tanggalLahir}
+            onChange={(e) => setTanggalLahir(e.target.value)}
+          />
+        </div>
+
         <KelolaPasienButton pasienEdit={pasienEdit} tambahPasien={tambahPasien} updatePasien={updatePasien} />
+
         <table className="table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nama</th>
-              <th>Tanggal Lahir</th>
-              <th>Nomor Telepon</th>
-              <th>Email</th>
+              <th>Nama Pasien</th>
               <th>Alamat</th>
-              <th>Created At</th>
+              <th>No. Telepon</th>
+              <th>Email</th>
+              <th>Tanggal Lahir</th>
               <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {pasien.map(p => (
-              <tr key={p.id}>
-                <td>{p.id}</td>
+            {pasien.map((p) => (
+              <tr key={p.id_profil}>
+                <td>{p.id_profil}</td>
                 <td>{p.nama}</td>
-                <td>{p.tanggalLahir}</td>
-                <td>{p.nomorTelepon}</td>
-                <td>{p.email}</td>
                 <td>{p.alamat}</td>
-                <td>{p.created_at}</td>
+                <td>{p.nomor_telepon}</td>
+                <td>{p.email}</td>
+                <td>{new Date(p.tanggal_lahir).toLocaleDateString()}</td>
                 <td>
-                  <button onClick={() => {
-                    setPasienEdit(p);
-                    setNama(p.nama);
-                    setTanggalLahir(p.tanggalLahir);
-                    setNomorTelepon(p.nomorTelepon);
-                    setEmail(p.email);
-                    setAlamat(p.alamat);
-                  }}>Edit</button>
-                  <button onClick={() => hapusPasien(p.id)}>Hapus</button>
+                  <button
+                    onClick={() => {
+                      setPasienEdit(p);
+                      setNama(p.nama);
+                      setAlamat(p.alamat);
+                      setNomorTelepon(p.nomor_telepon);
+                      setEmail(p.email);
+                      setTanggalLahir(p.tanggal_lahir.substring(0, 10)); // Format tanggal menjadi YYYY-MM-DD
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button onClick={() => hapusPasien(p.id_profil)}>Hapus</button>
                 </td>
               </tr>
             ))}
