@@ -4,6 +4,7 @@ import './RiwayatPasien.css';
 
 const KelolaAppointment = () => {
   const [appointments, setAppointments] = useState([]);
+  const [users, setUsers] = useState([]);  // State untuk menyimpan data pengguna
   const [formData, setFormData] = useState({
     userId: '',
     nama: '',
@@ -20,41 +21,64 @@ const KelolaAppointment = () => {
   const [polis, setPolis] = useState([]);
   const [jadwals, setJadwals] = useState([]);
 
-  // Helper function to handle form changes
+  // Fungsi untuk menangani perubahan input form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Jika dokterId berubah, fetch jadwal terkait
+    if (name === 'dokterId' && value) {
+      fetchJadwalsByDokter(value);
+    }
   };
 
-  // Fetch initial data (dokters, polis, jadwals, and appointments)
+  // Fetch data awal (users, dokters, polis, dan appointments)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dokterRes, poliRes, jadwalRes, appointmentRes] = await Promise.all([
+        const [userRes, dokterRes, poliRes, appointmentRes] = await Promise.all([
+          fetch('http://localhost:4000/api/users'),  // Endpoint untuk users
           fetch('http://localhost:4000/api/doctors'),
           fetch('http://localhost:4000/api/polis'),
-          fetch('http://localhost:4000/api/jadwals'),
           fetch('http://localhost:4000/api/appointments'),
         ]);
 
+        if (!userRes.ok || !dokterRes.ok || !poliRes.ok || !appointmentRes.ok) {
+          throw new Error('Error fetching data');
+        }
+
+        const userData = await userRes.json();
         const dokterData = await dokterRes.json();
         const poliData = await poliRes.json();
-        const jadwalData = await jadwalRes.json();
         const appointmentData = await appointmentRes.json();
 
-        if (dokterData.success) setDokters(dokterData.data);
-        if (poliData.success) setPolis(poliData.data);
-        if (jadwalData.success) setJadwals(jadwalData.data);
-        if (appointmentData.success) setAppointments(appointmentData.data);
+        setUsers(userData.data || []);  // Set data users
+        setDokters(dokterData.data || []);
+        setPolis(poliData.data || []);
+        setAppointments(appointmentData.data || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error.message);
       }
     };
 
     fetchData();
   }, []);
 
-  // Add or update appointment
+  // Fetch jadwals berdasarkan dokterId
+  const fetchJadwalsByDokter = async (dokterId) => {
+    try {
+      const res = await fetch(`http://localhost:4000/api/jadwals/${dokterId}`);
+      if (!res.ok) {
+        throw new Error(`Gagal fetch jadwal dengan dokterId: ${dokterId}`);
+      }
+      const data = await res.json();
+      setJadwals(data.data || []);
+    } catch (error) {
+      console.error('Error fetching jadwals:', error.message);
+    }
+  };
+
+  // Menambah atau memperbarui appointment
   const handleSubmit = () => {
     const url = appointmentEdit
       ? `http://localhost:4000/api/appointments/${appointmentEdit.appointment_id}`
@@ -66,37 +90,56 @@ const KelolaAppointment = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Request gagal dengan status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         if (data.success) {
           setAppointments((prev) => {
             if (appointmentEdit) {
               return prev.map((item) =>
-                item.appointment_id === appointmentEdit.appointment_id ? data.appointment : item
+                item.appointment_id === appointmentEdit.appointment_id
+                  ? data.appointment
+                  : item
               );
             }
             return [...prev, data.appointment];
           });
           resetForm();
         } else {
-          console.error('Error saving appointment:', data.message);
+          console.error('Error menyimpan appointment:', data.message);
         }
       })
-      .catch((error) => console.error('Error saving appointment:', error));
+      .catch((error) => {
+        console.error('Error menyimpan appointment:', error.message);
+      });
   };
 
-  // Delete appointment
+  // Menghapus appointment
   const handleDelete = (appointment_id) => {
     fetch(`http://localhost:4000/api/appointments/${appointment_id}`, {
       method: 'DELETE',
     })
-      .then(() => {
-        setAppointments((prev) => prev.filter((item) => item.appointment_id !== appointment_id));
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Delete gagal dengan status: ${res.status}`);
+        }
+        return res.json();
       })
-      .catch((error) => console.error('Error deleting appointment:', error));
+      .then(() => {
+        setAppointments((prev) =>
+          prev.filter((item) => item.appointment_id !== appointment_id)
+        );
+      })
+      .catch((error) => {
+        console.error('Error menghapus appointment:', error.message);
+      });
   };
 
-  // Reset form after submission or cancel
+  // Reset form setelah pengisian atau pembatalan
   const resetForm = () => {
     setFormData({
       userId: '',
@@ -125,15 +168,15 @@ const KelolaAppointment = () => {
       <div className="main-content">
         <h2>Kelola Appointment</h2>
 
-        {/* Form Input */}
         <div className="form-container">
-          <input
-            type="text"
-            name="userId"
-            value={formData.userId}
-            onChange={handleInputChange}
-            placeholder="User ID"
-          />
+          <select name="userId" value={formData.userId} onChange={handleInputChange}>
+            <option value="">Pilih Pengguna</option>
+            {users.map((user) => (
+              <option key={user.user_id} value={user.user_id}>
+                {user.nama}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             name="nama"
@@ -161,19 +204,19 @@ const KelolaAppointment = () => {
             onChange={handleInputChange}
             placeholder="Email"
           />
-          <select name="jadwalId" value={formData.jadwalId} onChange={handleInputChange}>
-            <option value="">Pilih Jadwal</option>
-            {jadwals.map((jadwal) => (
-              <option key={jadwal.jadwal_id} value={jadwal.jadwal_id}>
-                {jadwal.waktu}
-              </option>
-            ))}
-          </select>
           <select name="dokterId" value={formData.dokterId} onChange={handleInputChange}>
             <option value="">Pilih Dokter</option>
             {dokters.map((dokter) => (
               <option key={dokter.dokter_id} value={dokter.dokter_id}>
                 {dokter.nama}
+              </option>
+            ))}
+          </select>
+          <select name="jadwalId" value={formData.jadwalId} onChange={handleInputChange}>
+            <option value="">Pilih Jadwal</option>
+            {jadwals.map((jadwal) => (
+              <option key={jadwal.jadwal_id} value={jadwal.jadwal_id}>
+                {jadwal.waktu}
               </option>
             ))}
           </select>
@@ -198,7 +241,6 @@ const KelolaAppointment = () => {
           {appointmentEdit && <button onClick={resetForm}>Batal</button>}
         </div>
 
-        {/* Tabel Appointment */}
         <table className="table">
           <thead>
             <tr>
