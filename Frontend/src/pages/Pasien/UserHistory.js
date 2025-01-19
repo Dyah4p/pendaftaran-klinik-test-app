@@ -22,50 +22,6 @@ const UserHistory = () => {
 
   const userId = user ? user.user_id : null;
 
-  // Fetch data dokter
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const response = await fetch(`http://localhost:4000/api/doctors`);
-        const data = await response.json();
-        if (data.status === 'success') {
-          setDoctors(data.data);
-          console.log('Data dokter berhasil diambil:', data.data);
-        } else {
-          setError(data.message);
-          console.error('Gagal mengambil data dokter:', data.message);
-        }
-      } catch (error) {
-        setError(`Error mengambil data dokter: ${error.message}`);
-        console.error('Error mengambil data dokter:', error.message);
-      }
-    };
-
-    fetchDoctors();
-  }, []);
-
-  // Fetch data jadwal
-  useEffect(() => {
-    const fetchSchedule = async () => {
-      try {
-        const response = await fetch(`http://localhost:4000/api/jadwals`);
-        const data = await response.json();
-        if (data.status === 'success') {
-          setSchedule(data.data);
-          console.log('Data jadwal berhasil diambil:', data.data);
-        } else {
-          setError(data.message);
-          console.error('Gagal mengambil data jadwal:', data.message);
-        }
-      } catch (error) {
-        setError(`Error mengambil data jadwal: ${error.message}`);
-        console.error('Error mengambil data jadwal:', error.message);
-      }
-    };
-
-    fetchSchedule();
-  }, []);
-
   // Fetch riwayat janji temu
   useEffect(() => {
     if (userId) {
@@ -102,6 +58,42 @@ const UserHistory = () => {
     }
   }, [userId]);
 
+  // Fetch data dokter dan jadwal berdasarkan riwayat janji temu
+  useEffect(() => {
+    const fetchDoctorsAndSchedule = async () => {
+      try {
+        const doctorResponses = await Promise.all(
+          histories.map(async (history) => {
+            const doctorResponse = await fetch(`http://localhost:4000/api/doctors/${history.dokter_id}`);
+            const doctorData = await doctorResponse.json();
+            return doctorData.data;
+          })
+        );
+
+        const scheduleResponses = await Promise.all(
+          histories.map(async (history) => {
+            const scheduleResponse = await fetch(`http://localhost:4000/api/jadwals/${history.jadwal_id}`);
+            const scheduleData = await scheduleResponse.json();
+            return scheduleData.data;
+          })
+        );
+
+        setDoctors(doctorResponses);
+        setSchedule(scheduleResponses);
+
+        console.log('Doctors:', doctorResponses); // Debugging: Memeriksa data dokter
+        console.log('Schedule:', scheduleResponses); // Debugging: Memeriksa data jadwal
+      } catch (error) {
+        setError(`Error mengambil data dokter atau jadwal: ${error.message}`);
+        console.error('Error mengambil data dokter atau jadwal:', error.message);
+      }
+    };
+
+    if (histories.length > 0) {
+      fetchDoctorsAndSchedule();
+    }
+  }, [histories]);
+
   const handleBackToDashboard = () => {
     navigate('/UserDashboard');
   };
@@ -114,15 +106,18 @@ const UserHistory = () => {
 
       <div className="history-container">
         {histories.length > 0 ? (
-          histories.map((history) => {
-            // Mengambil data poli, dokter, dan jadwal berdasarkan ID
+          histories.map((history, index) => {
             const poli = polies ? polies.find((poli) => poli.id === history.polis_id) : null;
-            const dokter = doctors ? doctors.find((dokter) => dokter.id === history.dokter_id) : null;
-            const jadwal = schedule ? schedule.find((jadwal) => jadwal.id === history.jadwal_id) : null;
+            const dokter = doctors[index] || null;
+            const jadwal = schedule[index] || null;
 
             const dokterNama = dokter ? dokter.nama : 'Dokter tidak ditemukan';
             const poliNama = poli ? poli.nama : 'Poli tidak ditemukan';
             const jadwalNama = jadwal ? `${jadwal.tanggal} ${jadwal.jam}` : 'Jadwal tidak ditemukan';
+
+            console.log('Doctor:', dokter); // Debugging: Memeriksa data dokter
+            console.log('Schedule:', jadwal); // Debugging: Memeriksa data jadwal
+            console.log('Poli:', poli); // Debugging: Memeriksa data poli
 
             return (
               <div className="history-item" key={history.appointment_id}>

@@ -98,7 +98,6 @@ const KelolaPasien = () => {
         <Link to="/KelolaPoli">Kelola Poli</Link>
         <Link to="/KelolaPasien">Kelola Data Pasien</Link>
         <Link to="/KelolaJadwal">Kelola Jadwal</Link>
-        <Link to="/KonfirmasiJanji">Konfirmasi Janji Temu</Link>
         <Link to="/RiwayatPasien">Riwayat Pasien</Link>
       </div>
       <div className="main-content">

@@ -1,118 +1,243 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './RiwayatPasien.css';
-import RiwayatButton from '../../components/adminbutton/RiwayatButton'; // Impor komponen tombol
 
-const RiwayatPasien = () => {
-  const [riwayats, setRiwayats] = useState([]);
-  const [nama, setNama] = useState('');
-  const [tanggalKunjungan, setTanggalKunjungan] = useState('');
-  const [diagnosis, setDiagnosis] = useState('');
-  const [tindakan, setTindakan] = useState('');
-  const [riwayatEdit, setRiwayatEdit] = useState(null);
+const KelolaAppointment = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [formData, setFormData] = useState({
+    userId: '',
+    nama: '',
+    tanggalLahir: '',
+    nomorTelepon: '',
+    email: '',
+    jadwalId: '',
+    dokterId: '',
+    polisId: '',
+    status: '',
+  });
+  const [appointmentEdit, setAppointmentEdit] = useState(null);
+  const [dokters, setDokters] = useState([]);
+  const [polis, setPolis] = useState([]);
+  const [jadwals, setJadwals] = useState([]);
 
-  const tambahRiwayat = () => {
-    const riwayatBaru = { id: Date.now(), nama, tanggal_kunjungan: tanggalKunjungan, diagnosis, tindakan, created_at: new Date().toISOString() };
-    setRiwayats([...riwayats, riwayatBaru]);
-    setNama('');
-    setTanggalKunjungan('');
-    setDiagnosis('');
-    setTindakan('');
+  // Helper function to handle form changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const updateRiwayat = () => {
-    const riwayatsDiperbarui = riwayats.map(riwayat =>
-      riwayat.id === riwayatEdit.id ? { ...riwayat, nama, tanggal_kunjungan: tanggalKunjungan, diagnosis, tindakan, created_at: riwayatEdit.created_at } : riwayat
-    );
-    setRiwayats(riwayatsDiperbarui);
-    setRiwayatEdit(null);
-    setNama('');
-    setTanggalKunjungan('');
-    setDiagnosis('');
-    setTindakan('');
+  // Fetch initial data (dokters, polis, jadwals, and appointments)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [dokterRes, poliRes, jadwalRes, appointmentRes] = await Promise.all([
+          fetch('http://localhost:4000/api/doctors'),
+          fetch('http://localhost:4000/api/polis'),
+          fetch('http://localhost:4000/api/jadwals'),
+          fetch('http://localhost:4000/api/appointments'),
+        ]);
+
+        const dokterData = await dokterRes.json();
+        const poliData = await poliRes.json();
+        const jadwalData = await jadwalRes.json();
+        const appointmentData = await appointmentRes.json();
+
+        if (dokterData.success) setDokters(dokterData.data);
+        if (poliData.success) setPolis(poliData.data);
+        if (jadwalData.success) setJadwals(jadwalData.data);
+        if (appointmentData.success) setAppointments(appointmentData.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Add or update appointment
+  const handleSubmit = () => {
+    const url = appointmentEdit
+      ? `http://localhost:4000/api/appointments/${appointmentEdit.appointment_id}`
+      : 'http://localhost:4000/api/appointments';
+    const method = appointmentEdit ? 'PUT' : 'POST';
+
+    fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setAppointments((prev) => {
+            if (appointmentEdit) {
+              return prev.map((item) =>
+                item.appointment_id === appointmentEdit.appointment_id ? data.appointment : item
+              );
+            }
+            return [...prev, data.appointment];
+          });
+          resetForm();
+        } else {
+          console.error('Error saving appointment:', data.message);
+        }
+      })
+      .catch((error) => console.error('Error saving appointment:', error));
   };
 
-  const hapusRiwayat = (id) => {
-    const riwayatsDiperbarui = riwayats.filter(riwayat => riwayat.id !== id);
-    setRiwayats(riwayatsDiperbarui);
+  // Delete appointment
+  const handleDelete = (appointment_id) => {
+    fetch(`http://localhost:4000/api/appointments/${appointment_id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setAppointments((prev) => prev.filter((item) => item.appointment_id !== appointment_id));
+      })
+      .catch((error) => console.error('Error deleting appointment:', error));
+  };
+
+  // Reset form after submission or cancel
+  const resetForm = () => {
+    setFormData({
+      userId: '',
+      nama: '',
+      tanggalLahir: '',
+      nomorTelepon: '',
+      email: '',
+      jadwalId: '',
+      dokterId: '',
+      polisId: '',
+      status: '',
+    });
+    setAppointmentEdit(null);
   };
 
   return (
-    <div className="riwayat-pasien">
+    <div className="kelola-appointment">
       <div className="sidebar">
         <Link to="/AdminDashboard">Dashboard</Link>
         <Link to="/KelolaDokter">Kelola Dokter</Link>
         <Link to="/KelolaPoli">Kelola Poli</Link>
         <Link to="/KelolaPasien">Kelola Data Pasien</Link>
         <Link to="/KelolaJadwal">Kelola Jadwal</Link>
-        <Link to="/KonfirmasiJanji">Konfirmasi Janji Temu</Link>
         <Link to="/RiwayatPasien">Riwayat Pasien</Link>
       </div>
       <div className="main-content">
-        <h2>Riwayat Pasien</h2>
-        <div>
-          <label>Nama:</label>
+        <h2>Kelola Appointment</h2>
+
+        {/* Form Input */}
+        <div className="form-container">
           <input
             type="text"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
+            name="userId"
+            value={formData.userId}
+            onChange={handleInputChange}
+            placeholder="User ID"
           />
-        </div>
-        <div>
-          <label>Tanggal Kunjungan:</label>
+          <input
+            type="text"
+            name="nama"
+            value={formData.nama}
+            onChange={handleInputChange}
+            placeholder="Nama"
+          />
           <input
             type="date"
-            value={tanggalKunjungan}
-            onChange={(e) => setTanggalKunjungan(e.target.value)}
+            name="tanggalLahir"
+            value={formData.tanggalLahir}
+            onChange={handleInputChange}
           />
-        </div>
-        <div>
-          <label>Diagnosis:</label>
           <input
             type="text"
-            value={diagnosis}
-            onChange={(e) => setDiagnosis(e.target.value)}
+            name="nomorTelepon"
+            value={formData.nomorTelepon}
+            onChange={handleInputChange}
+            placeholder="Nomor Telepon"
           />
-        </div>
-        <div>
-          <label>Tindakan:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email"
+          />
+          <select name="jadwalId" value={formData.jadwalId} onChange={handleInputChange}>
+            <option value="">Pilih Jadwal</option>
+            {jadwals.map((jadwal) => (
+              <option key={jadwal.jadwal_id} value={jadwal.jadwal_id}>
+                {jadwal.waktu}
+              </option>
+            ))}
+          </select>
+          <select name="dokterId" value={formData.dokterId} onChange={handleInputChange}>
+            <option value="">Pilih Dokter</option>
+            {dokters.map((dokter) => (
+              <option key={dokter.dokter_id} value={dokter.dokter_id}>
+                {dokter.nama}
+              </option>
+            ))}
+          </select>
+          <select name="polisId" value={formData.polisId} onChange={handleInputChange}>
+            <option value="">Pilih Poliklinik</option>
+            {polis.map((poli) => (
+              <option key={poli.polis_id} value={poli.polis_id}>
+                {poli.nama}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
-            value={tindakan}
-            onChange={(e) => setTindakan(e.target.value)}
+            name="status"
+            value={formData.status}
+            onChange={handleInputChange}
+            placeholder="Status"
           />
+          <button onClick={handleSubmit}>
+            {appointmentEdit ? 'Update Appointment' : 'Tambah Appointment'}
+          </button>
+          {appointmentEdit && <button onClick={resetForm}>Batal</button>}
         </div>
-        <RiwayatButton riwayatEdit={riwayatEdit} tambahRiwayat={tambahRiwayat} updateRiwayat={updateRiwayat} />
-        <table>
+
+        {/* Tabel Appointment */}
+        <table className="table">
           <thead>
             <tr>
               <th>ID</th>
+              <th>User ID</th>
               <th>Nama</th>
-              <th>Tanggal Kunjungan</th>
-              <th>Diagnosis</th>
-              <th>Tindakan</th>
-              <th>Created At</th>
+              <th>Tanggal Lahir</th>
+              <th>Nomor Telepon</th>
+              <th>Email</th>
+              <th>Jadwal</th>
+              <th>Dokter</th>
+              <th>Poliklinik</th>
+              <th>Status</th>
               <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {riwayats.map(riwayat => (
-              <tr key={riwayat.id}>
-                <td>{riwayat.id}</td>
-                <td>{riwayat.nama}</td>
-                <td>{riwayat.tanggal_kunjungan}</td>
-                <td>{riwayat.diagnosis}</td>
-                <td>{riwayat.tindakan}</td>
-                <td>{riwayat.created_at}</td>
+            {appointments.map((appointment) => (
+              <tr key={appointment.appointment_id}>
+                <td>{appointment.appointment_id}</td>
+                <td>{appointment.userId}</td>
+                <td>{appointment.nama}</td>
+                <td>{appointment.tanggalLahir}</td>
+                <td>{appointment.nomorTelepon}</td>
+                <td>{appointment.email}</td>
+                <td>{jadwals.find((jadwal) => jadwal.jadwal_id === appointment.jadwalId)?.waktu || 'Tidak Ditemukan'}</td>
+                <td>{dokters.find((dokter) => dokter.dokter_id === appointment.dokterId)?.nama || 'Tidak Ditemukan'}</td>
+                <td>{polis.find((poli) => poli.polis_id === appointment.polisId)?.nama || 'Tidak Ditemukan'}</td>
+                <td>{appointment.status}</td>
                 <td>
-                  <button onClick={() => {
-                    setRiwayatEdit(riwayat);
-                    setNama(riwayat.nama);
-                    setTanggalKunjungan(riwayat.tanggal_kunjungan);
-                    setDiagnosis(riwayat.diagnosis);
-                    setTindakan(riwayat.tindakan);
-                  }}>Edit</button>
-                  <button onClick={() => hapusRiwayat(riwayat.id)}>Hapus</button>
+                  <button
+                    onClick={() => {
+                      setAppointmentEdit(appointment);
+                      setFormData({ ...appointment });
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(appointment.appointment_id)}>Hapus</button>
                 </td>
               </tr>
             ))}
@@ -123,4 +248,4 @@ const RiwayatPasien = () => {
   );
 };
 
-export default RiwayatPasien;
+export default KelolaAppointment;

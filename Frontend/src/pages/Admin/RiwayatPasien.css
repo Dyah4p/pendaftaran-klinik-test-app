@@ -1,25 +1,20 @@
-.riwayat-pasien {
+.kelola-appointment {
   display: flex;
-  height: 100vh;
-  font-family: Arial, sans-serif;
+  height: 100vh; /* Tinggi penuh */
 }
 
 .sidebar {
-  width: 200px;
   background-color: #add8e6;
   padding: 20px;
+  width: 200px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
 }
 
 .sidebar a {
-  color: #333;
+  color: #800080;
   margin: 10px 0;
   text-decoration: none;
-  font-size: 18px;
-  display: block;
 }
 
 .sidebar a:hover {
@@ -27,86 +22,67 @@
 }
 
 .main-content {
+  background-color: rgba(204, 255, 204, 0.9); /* Transparansi pada konten utama */
   flex-grow: 1;
   padding: 40px;
+  overflow-y: auto; /* Tambahkan scroll jika konten terlalu panjang */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  background-color: #ccffcc;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px; /* Tambahkan radius pada border */
 }
 
-.main-content h2 {
-  color: #007BFF;
+h2 {
+  color: #000;
   margin-bottom: 20px;
-  font-size: 28px;
-  text-align: left;
+  font-size: 24px;
+  text-align: center;
 }
 
-.main-content div {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.main-content input[type="text"],
-.main-content input[type="date"] {
-  padding: 8px;
-  width: 300px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-table {
+.table {
   width: 100%;
+  max-width: 800px;
   border-collapse: collapse;
-  margin-top: 20px;
-}
-
-table, th, td {
-  border: 1px solid #ddd;
 }
 
 th, td {
-  padding: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
   text-align: left;
 }
 
 th {
   background-color: #f2f2f2;
+  font-weight: bold;
 }
 
-tbody tr:hover {
-  background-color: #f9f9f9;
-}
-
-tbody td button {
-  margin-right: 5px;
+button {
   padding: 5px 10px;
-  border: none;
   border-radius: 4px;
+  border: none;
+  background-color: #007BFF;
+  color: #fff;
   cursor: pointer;
 }
 
-tbody td button:first-child {
-  background-color: #007BFF;
-  color: #fff;
-}
-
-tbody td button:first-child:hover {
+button:hover {
   background-color: #0056b3;
 }
 
-tbody td button:last-child {
-  background-color: #dc3545;
-  color: #fff;
+.form-group {
+  margin-bottom: 15px;
 }
 
-tbody td button:last-child:hover {
-  background-color: #c82333;
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }

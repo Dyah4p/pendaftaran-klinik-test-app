@@ -112,7 +112,6 @@ const KelolaJadwal = () => {
         <Link to="/KelolaPoli">Kelola Poli</Link>
         <Link to="/KelolaPasien">Kelola Data Pasien</Link>
         <Link to="/KelolaJadwal">Kelola Jadwal</Link>
-        <Link to="/KonfirmasiJanji">Konfirmasi Janji Temu</Link>
         <Link to="/RiwayatPasien">Riwayat Pasien</Link>
       </div>
       <div className="main-content">
@@ -157,6 +156,7 @@ const KelolaJadwal = () => {
               <th>Dokter</th>
               <th>Tanggal</th>
               <th>Jam</th>
+              <th>User ID</th> {/* Kolom baru */}
               <th>Aksi</th>
             </tr>
           </thead>
@@ -169,6 +169,7 @@ const KelolaJadwal = () => {
                 </td>
                 <td>{jadwal.tanggal}</td>
                 <td>{jadwal.jam}</td>
+                <td>{jadwal.user_id || '-'}</td> {/* Menampilkan user_id */}
                 <td>
                   <button
                     onClick={() => {

@@ -11,7 +11,6 @@ const AdminDashboard = () => {
         <a href="/KelolaPasien">Kelola Data Pasien</a>
         <a href="/KelolaJadwal">Kelola Jadwal</a>
         <a href="/RiwayatPasien">Riwayat Pasien</a>
-        <a href="/KonfirmasiJanji">Konfirmasi Janji Temu</a>
       </div>
       <div className="main-content">
         <h2>Admin Dashboard</h2>
