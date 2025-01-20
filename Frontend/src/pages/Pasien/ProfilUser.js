@@ -6,7 +6,7 @@ import LogoutButton from '../../components/pasienbutton/LogoutButton';
 import './ProfilUser.css';
 
 const ProfilUser = () => {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useUser(); // Ambil data user dari context
   const [userData, setUserData] = useState({
     user_id: '',
     nama: '',
@@ -32,39 +32,41 @@ const ProfilUser = () => {
   };
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setError('User belum login!');
       setLoading(false);
-    } else {
-      const fetchUserProfile = async () => {
-        try {
-          setLoading(true);
-          const response = await fetch(`http://localhost:4000/api/user_profiles/${userId}`);
-          const data = await response.json();
-
-          if (data.status === 'success' && data.data) {
-            setUserData({
-              user_id: data.data.user_id || '',
-              nama: data.data.nama || '',
-              tanggal_lahir: formatDate(data.data.tanggal_lahir) || '',
-              nomor_telepon: data.data.nomor_telepon || '',
-              email: data.data.email || '',
-              alamat: data.data.alamat || '',
-              created_at: data.data.created_at || '',
-            });
-            setError('');
-          } else {
-            setError('Profil pengguna tidak ditemukan.');
-          }
-        } catch (error) {
-          setError(`Error mengambil profil pengguna: ${error.message}`);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUserProfile();
+      return;
     }
-  }, [user, userId]);
+
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:4000/api/user_profiles/${userId}`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+          setUserData({
+            user_id: data.data.user_id || '',
+            nama: data.data.nama || '',
+            tanggal_lahir: formatDate(data.data.tanggal_lahir) || '',
+            nomor_telepon: data.data.nomor_telepon || '',
+            email: data.data.email || '',
+            alamat: data.data.alamat || '',
+            created_at: data.data.created_at || '',
+          });
+          setError('');
+        } else {
+          setError('Profil pengguna tidak ditemukan.');
+        }
+      } catch (error) {
+        setError(`Error mengambil profil pengguna: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId]); // Menambahkan userId sebagai dependensi
 
   const handleLogout = () => {
     setUser(null);
@@ -85,7 +87,7 @@ const ProfilUser = () => {
     try {
       const payload = {
         nama: userData.nama,
-        tanggal_lahir: userData.tanggal_lahir, // Pastikan tanggal disimpan dalam format yang benar
+        tanggal_lahir: userData.tanggal_lahir,
         nomor_telepon: userData.nomor_telepon,
         email: userData.email,
         alamat: userData.alamat,
@@ -102,10 +104,10 @@ const ProfilUser = () => {
       if (data.status === 'success') {
         setSaved(true);
         setError('');
-        // Pastikan state diperbarui untuk menampilkan tanggal lahir yang baru disimpan
+        // Memperbarui state untuk menyimpan data yang telah diubah
         setUserData((prevState) => ({
           ...prevState,
-          tanggal_lahir: userData.tanggal_lahir,  // Tetap simpan tanggal lahir yang baru
+          tanggal_lahir: userData.tanggal_lahir, // Pastikan tanggal lahir yang baru tersimpan
         }));
       } else {
         setError(data.message || 'Gagal memperbarui profil pengguna.');

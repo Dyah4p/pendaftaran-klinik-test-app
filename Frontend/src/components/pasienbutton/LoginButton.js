@@ -1,11 +1,6 @@
-import React from 'react';
-
+// Komponen LoginButton
 const LoginButton = ({ handleLogin }) => {
-  return (
-    <button onClick={handleLogin} className="login-button">
-      Login
-    </button>
-  );
+  return <button onClick={handleLogin}>Login</button>;
 };
 
 export default LoginButton;

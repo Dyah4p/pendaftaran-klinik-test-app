@@ -1,5 +1,6 @@
 // src/pages/Pasien/RegisterUser.js
 import React, { useState } from 'react';
+import { useUser } from '../../contexts/UserContext'; // Import useUser untuk mengakses context
 import '../Pasien/RegisterUser.css';
 
 const RegisterUser = () => {
@@ -8,6 +9,7 @@ const RegisterUser = () => {
   const [created_at, setCreatedAt] = useState(''); // Pastikan tanggal dibuat disesuaikan dengan backend
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { setUser } = useUser(); // Ambil setUser dari context untuk memperbarui informasi user
 
   const handleRegister = async () => {
     try {
@@ -21,18 +23,26 @@ const RegisterUser = () => {
       console.log('Register response:', data);
 
       if (data.status === 'success') {
-        setSuccess('Pendaftaran berhasil!'); // Menampilkan pesan sukses
-        setError(''); // Menghapus pesan error sebelumnya
-        setUsername(''); // Mengosongkan input setelah sukses
-        setPassword(''); // Mengosongkan input setelah sukses
-        setCreatedAt(''); // Mengosongkan input setelah sukses
+        // Setelah pendaftaran berhasil, perbarui context dengan data pengguna baru
+        setUser({
+          user_id: data.user_id,  // Ambil user_id dari response
+          username: data.username,
+          created_at: data.created_at,
+          // Tambahkan data lainnya sesuai kebutuhan
+        });
+
+        setSuccess('Pendaftaran berhasil!');
+        setError('');
+        setUsername('');
+        setPassword('');
+        setCreatedAt('');
       } else {
-        setSuccess(''); // Menghapus pesan sukses
-        setError(data.message || 'Gagal mendaftar'); // Menampilkan pesan error jika ada
+        setSuccess('');
+        setError(data.message || 'Gagal mendaftar');
       }
     } catch (error) {
-      setSuccess(''); // Menghapus pesan sukses
-      setError(`Error mendaftar: ${error.message}`); // Menampilkan error jaringan atau server
+      setSuccess('');
+      setError(`Error mendaftar: ${error.message}`);
     }
   };
 

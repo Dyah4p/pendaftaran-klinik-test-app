@@ -1,35 +1,37 @@
-// DoctorContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const DoctorContext = createContext();
+const DokterContext = createContext();
 
-export const useDoctor = () => useContext(DoctorContext);
+export const useDokter = () => {
+  return useContext(DokterContext);
+};
 
-export const DoctorProvider = ({ children }) => {
-  const [doctors, setDoctors] = useState([]);
-  const [error, setError] = useState('');
+export const DokterProvider = ({ children }) => {
+  const [dokters, setDokters] = useState([]);
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchDokters = async () => {
       try {
         const response = await fetch('http://localhost:4000/api/doctors');
         const data = await response.json();
-        if (data.success) {
-          setDoctors(data.data);
+
+        // Pastikan data yang diterima memiliki properti "data" dan berbentuk array
+        if (data && Array.isArray(data.data)) {
+          setDokters(data.data);
         } else {
-          setError(data.message);
+          console.error('Data dokter tidak valid:', data);
         }
       } catch (error) {
-        setError(error.message);
+        console.error('Error fetching dokters:', error);
       }
     };
 
-    fetchDoctors();
+    fetchDokters();
   }, []);
 
   return (
-    <DoctorContext.Provider value={{ doctors, error }}>
+    <DokterContext.Provider value={{ dokters }}>
       {children}
-    </DoctorContext.Provider>
+    </DokterContext.Provider>
   );
 };

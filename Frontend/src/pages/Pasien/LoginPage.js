@@ -11,8 +11,15 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { setUser } = useUser(); // Ambil fungsi setUser dari context
 
+  // Handle login process
   const handleLogin = async () => {
     setError(''); // Reset error sebelum login
+
+    // Validasi input
+    if (!username || !password) {
+      setError('Username dan password harus diisi!');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:4000/api/users/login', {
@@ -30,7 +37,7 @@ const LoginPage = () => {
 
       if (data.status === 'success' && data.user) {
         console.log('Login berhasil:', data.user);
-        
+
         // Simpan data user ke context dan localStorage
         setUser(data.user); // Set user di context (user_id akan tersimpan di sini)
         localStorage.setItem('user', JSON.stringify(data.user)); // Simpan user di localStorage
@@ -60,6 +67,7 @@ const LoginPage = () => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            placeholder="Masukkan username"
           />
         </div>
         <div>
@@ -68,6 +76,7 @@ const LoginPage = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Masukkan password"
           />
         </div>
         <LoginButton handleLogin={handleLogin} /> {/* Komponen tombol login */}

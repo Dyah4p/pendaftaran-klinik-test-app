@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext'; // Mengambil user context
-import { usePoli } from '../../contexts/PoliContext'; // Mengambil PoliContext
-import BackButton from '../../components/pasienbutton/BackButton'; // Impor komponen tombol kembali
+import { useUser } from '../../contexts/UserContext';
+import { useDokter } from '../../contexts/DokterContext';  // Menggunakan DokterContext
+import { useJadwal } from '../../contexts/JadwalContext';  // Menggunakan JadwalContext
+import { usePoli } from '../../contexts/PoliContext';  // Menggunakan PoliContext
+import BackButton from '../../components/pasienbutton/BackButton';
 import './UserHistory.css';
 
 const UserHistory = () => {
   const { user } = useUser();
-  const { polies, error: poliError } = usePoli();
+  const { polies: contextPolies } = usePoli(); 
+  const { dokters } = useDokter();  // Mengambil data dokter dari DokterContext
+  const { jadwals } = useJadwal();  // Mengambil data jadwal dari JadwalContext
   const [histories, setHistories] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [schedule, setSchedule] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const UserHistory = () => {
     if (userId) {
       const fetchHistory = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/api/appointments/history`, {
+          const response = await fetch('http://localhost:4000/api/appointments/history', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -58,42 +60,6 @@ const UserHistory = () => {
     }
   }, [userId]);
 
-  // Fetch data dokter dan jadwal berdasarkan riwayat janji temu
-  useEffect(() => {
-    const fetchDoctorsAndSchedule = async () => {
-      try {
-        const doctorResponses = await Promise.all(
-          histories.map(async (history) => {
-            const doctorResponse = await fetch(`http://localhost:4000/api/doctors/${history.dokter_id}`);
-            const doctorData = await doctorResponse.json();
-            return doctorData.data;
-          })
-        );
-
-        const scheduleResponses = await Promise.all(
-          histories.map(async (history) => {
-            const scheduleResponse = await fetch(`http://localhost:4000/api/jadwals/${history.jadwal_id}`);
-            const scheduleData = await scheduleResponse.json();
-            return scheduleData.data;
-          })
-        );
-
-        setDoctors(doctorResponses);
-        setSchedule(scheduleResponses);
-
-        console.log('Doctors:', doctorResponses); // Debugging: Memeriksa data dokter
-        console.log('Schedule:', scheduleResponses); // Debugging: Memeriksa data jadwal
-      } catch (error) {
-        setError(`Error mengambil data dokter atau jadwal: ${error.message}`);
-        console.error('Error mengambil data dokter atau jadwal:', error.message);
-      }
-    };
-
-    if (histories.length > 0) {
-      fetchDoctorsAndSchedule();
-    }
-  }, [histories]);
-
   const handleBackToDashboard = () => {
     navigate('/UserDashboard');
   };
@@ -102,22 +68,21 @@ const UserHistory = () => {
     <div className="user-history">
       <h2>Riwayat Pendaftaran</h2>
       {error && <p className="error">{error}</p>}
-      {poliError && <p className="error">{poliError}</p>}
 
       <div className="history-container">
         {histories.length > 0 ? (
           histories.map((history, index) => {
-            const poli = polies ? polies.find((poli) => poli.id === history.polis_id) : null;
-            const dokter = doctors[index] || null;
-            const jadwal = schedule[index] || null;
+            // Pastikan data dokters, jadwals, dan polies sudah ada
+            const dokter = dokters?.find((doc) => doc.id === history.dokter_id) || { id: history.dokter_id };  // Cari dokter dari context
+            const jadwal = jadwals?.find((schedule) => schedule.id === history.jadwal_id) || { id: history.jadwal_id };  // Cari jadwal dari context
+            const poli = contextPolies?.find((p) => p.id === history.polis_id) || { id: history.polis_id };
 
-            const dokterNama = dokter ? dokter.nama : 'Dokter tidak ditemukan';
-            const poliNama = poli ? poli.nama : 'Poli tidak ditemukan';
-            const jadwalNama = jadwal ? `${jadwal.tanggal} ${jadwal.jam}` : 'Jadwal tidak ditemukan';
-
-            console.log('Doctor:', dokter); // Debugging: Memeriksa data dokter
-            console.log('Schedule:', jadwal); // Debugging: Memeriksa data jadwal
-            console.log('Poli:', poli); // Debugging: Memeriksa data poli
+            // Periksa apakah dokter, jadwal, dan poli ditemukan, jika tidak, tampilkan id
+            const dokterNama = dokter ? dokter.nama || dokter.id : dokter.id;
+            const jadwalNama = jadwal && jadwal.tanggal 
+              ? `${new Date(jadwal.tanggal).toLocaleDateString()} (${new Date('1970-01-01T' + jadwal.jam).toLocaleTimeString()})` 
+              : jadwal.id;
+            const poliNama = poli ? poli.nama || poli.id : poli.id;
 
             return (
               <div className="history-item" key={history.appointment_id}>
@@ -136,7 +101,6 @@ const UserHistory = () => {
         )}
       </div>
 
-      {/* Tombol kembali */}
       <BackButton handleBackToDashboard={handleBackToDashboard} />
     </div>
   );

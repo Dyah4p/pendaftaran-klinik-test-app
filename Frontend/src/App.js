@@ -3,13 +3,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext'; 
 import { PoliProvider } from './contexts/PoliContext';
+import { DokterProvider } from './contexts/DokterContext';  
+import { JadwalProvider } from './contexts/JadwalContext';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import UserDashboard from './pages/Pasien/UserDashboard';
 import KelolaDokter from './pages/Admin/KelolaDokter';
 import KelolaPoli from './pages/Admin/KelolaPoli';
 import KelolaPasien from './pages/Admin/KelolaPasien';
 import KelolaJadwal from './pages/Admin/KelolaJadwal';
-import KonfirmasiJanji from './pages/Admin/KonfirmasiJanji';
 import RiwayatPasien from './pages/Admin/RiwayatPasien';
 import LoginPage from './pages/Pasien/LoginPage';
 import RegisterAdmin from './pages/Admin/RegisterAdmin';
@@ -27,6 +28,8 @@ function App() {
     // Memastikan bahwa Router hanya dibungkus sekali dan context providers di luar Router
     <UserProvider>
       <PoliProvider>
+        <DokterProvider>
+          <JadwalProvider>
         <Router>
           <Routes>
             <Route path="/LoginPage" element={<LoginPage />} />
@@ -37,7 +40,6 @@ function App() {
             <Route path="/KelolaPoli" element={<KelolaPoli />} />
             <Route path="/KelolaPasien" element={<KelolaPasien />} />
             <Route path="/KelolaJadwal" element={<KelolaJadwal />} />
-            <Route path="/KonfirmasiJanji" element={<KonfirmasiJanji />} />
             <Route path="/RiwayatPasien" element={<RiwayatPasien />} />
             <Route path="/RegisterAdmin" element={<RegisterAdmin />} />
             <Route path="/RegisterUser" element={<RegisterUser />} />
@@ -50,6 +52,8 @@ function App() {
             <Route path="/" element={<LoginPage />} />
           </Routes>
         </Router>
+        </JadwalProvider>
+      </DokterProvider>
       </PoliProvider>
     </UserProvider>
   );
