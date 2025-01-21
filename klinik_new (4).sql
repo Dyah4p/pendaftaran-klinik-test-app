@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 17, 2025 at 02:04 PM
+-- Generation Time: Jan 20, 2025 at 06:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -52,7 +52,11 @@ INSERT INTO `appointments` (`appointment_id`, `user_id`, `nama`, `tanggal_lahir`
 (21, 16, 'Vino', '2025-01-13', '21313', 'vino@gmail.com', '2025-01-13 03:43:32', 3, 3, 3, 'pending'),
 (22, 16, 'Dyah', '2025-01-12', '0890877', 'dyah@1', '2025-01-13 13:35:25', 1, 1, 1, 'pending'),
 (23, 16, 'Vika', '2025-01-06', '069586956', 'vi@1', '2025-01-13 13:47:26', 1, 1, 1, 'pending'),
-(25, 16, 'Dyah', '2025-01-17', '978768', 'd@1', '2025-01-16 17:54:29', 2, 2, 2, 'pending');
+(25, 16, 'Dyah', '2025-01-17', '978768', 'd@1', '2025-01-16 17:54:29', 2, 2, 2, 'pending'),
+(26, 16, 'Dyah', '2025-01-19', '9897879', 'dy@1gmail.com', '2025-01-19 03:41:48', 1, 1, 1, 'pending'),
+(27, 16, 'Purwa', '2025-01-20', '87897767', 'pu@1gmail.com', '2025-01-20 03:20:49', 2, 2, 2, 'pending'),
+(28, 16, 'Dyah', '2025-01-20', '90897977', 'dyah@1gmail.com', '2025-01-20 04:40:50', 2, 2, 2, 'pending'),
+(29, 16, 'Dyah', '2019-06-20', '087877676', 'dyah@gmail.com', '2025-01-20 05:02:49', 2, 2, 2, 'pending');
 
 -- --------------------------------------------------------
 
@@ -86,19 +90,19 @@ INSERT INTO `doctors` (`dokter_id`, `polis_id`, `nama`, `image`, `created_at`) V
 CREATE TABLE `jadwals` (
   `jadwal_id` int(11) NOT NULL,
   `dokter_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `tanggal` date NOT NULL,
-  `jam` time NOT NULL,
-  `user_id` int(11) NOT NULL
+  `jam` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `jadwals`
 --
 
-INSERT INTO `jadwals` (`jadwal_id`, `dokter_id`, `tanggal`, `jam`, `user_id`) VALUES
-(1, 1, '2024-12-30', '14:00:00', 0),
-(2, 2, '2025-12-23', '15:00:00', 0),
-(3, 3, '2025-12-18', '19:00:00', 0);
+INSERT INTO `jadwals` (`jadwal_id`, `dokter_id`, `user_id`, `tanggal`, `jam`) VALUES
+(1, 1, 0, '2024-12-30', '14:00:00'),
+(2, 2, 0, '2025-12-23', '15:00:00'),
+(3, 3, 0, '2025-12-18', '19:00:00');
 
 -- --------------------------------------------------------
 
@@ -142,14 +146,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `role`, `created_at`) VALUES
 (1, 'Dyah', '$2b$10$m82VOz2qxBoXUdCuBYyVCeaGbuw7/1Ykrr5.zaRyFZVRIKjxr4UGy', 'user', '2024-12-14 08:40:02'),
-(2, 'Sehun', '2', 'user', '2024-12-31 06:12:00'),
-(3, 'Mimi', '5', 'admin', '2024-12-31 06:19:00'),
-(4, 'Budi', '23', 'user', '2024-12-31 06:24:00'),
-(5, 'Lina', '$2a$10$ovtvXqX.CAw/e9QtO/dztukTkkPp7MFCqpshg3WUXc8AtS0t5GMAi', 'user', '2024-12-31 09:35:00'),
-(15, 'Loli', '123456', 'user', '2025-01-01 11:08:00'),
 (16, 'Vino', '$2a$10$.T3gw1KgvSzQcDFsmX21/e1ff7ldps.jfwLffm2SvC2NUgcN0e8.a', 'user', '2025-01-09 07:02:43'),
-(17, 'rima', '$2a$10$0R.A.gGkUrWK31Bes/t7t.WSv60gnvAS3/nboRV39js20pgbdudOi', 'user', '2025-01-12 07:20:38'),
-(18, 'clau', '$2a$10$Xf6Fkh0wR51JCRn5HpmSZuBFsCU4v8EgQLxf4Xu.OavY2iizOMzI.', 'user', '2025-01-12 07:26:10'),
 (19, 'dea', '$2a$10$lpG5wpd5Kpdty5RAsRuTluIqaYPGqCmQyaI5kNkw8sdqPJ5d3wd/G', 'admin', '2025-01-12 07:34:27');
 
 -- --------------------------------------------------------
@@ -174,7 +171,7 @@ CREATE TABLE `user_profiles` (
 --
 
 INSERT INTO `user_profiles` (`id_profil`, `user_id`, `nama`, `tanggal_lahir`, `nomor_telepon`, `email`, `alamat`, `created_at`) VALUES
-(1, 16, 'Dyah', '2025-01-17', '989786', 'love@1', 'Porosido ', '2025-01-17 02:27:19');
+(1, 16, 'Purwa', '2025-01-13', '08787676', 'dyah@1', 'Bendosari', '2025-01-17 02:27:19');
 
 --
 -- Indexes for dumped tables
@@ -231,7 +228,7 @@ ALTER TABLE `user_profiles`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `doctors`
@@ -255,7 +252,7 @@ ALTER TABLE `polis`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
