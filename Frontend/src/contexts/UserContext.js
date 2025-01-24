@@ -1,18 +1,22 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-// Membuat UserContext
 const UserContext = createContext();
 
-// Hook untuk mengakses context
-export const useUser = () => useContext(UserContext);
-
-// Komponen Provider untuk menyediakan UserContext ke seluruh aplikasi
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Menyimpan informasi user
+  const [user, setUser] = useState(null);
+
+  // Fungsi logout
+  const logout = () => {
+    localStorage.removeItem('authToken'); // Hapus token autentikasi
+    localStorage.removeItem('userId'); // Hapus ID user yang tersimpan (jika ada)
+    setUser(null); // Reset data user di state
+  };
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logout }}>
       {children}
     </UserContext.Provider>
   );
 };
+
+export const useUser = () => useContext(UserContext);

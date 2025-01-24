@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const AppointmentController = require('../controllers/appointmentController');
 
-// Get all appointments
+// Get all appointments (Admin purpose only)
 router.get('/', AppointmentController.getAppointments);
 
 // Get appointment by ID
@@ -11,7 +11,7 @@ router.get('/:appointment_id', AppointmentController.getAppointment);
 // Create new appointment
 router.post('/', AppointmentController.createAppointment);
 
-// Get appointments by user_id (history)
+// Get appointments by user_id (history for logged-in user)
 router.post('/history', AppointmentController.getAppointmentsByUser);
 
 // Update appointment by ID

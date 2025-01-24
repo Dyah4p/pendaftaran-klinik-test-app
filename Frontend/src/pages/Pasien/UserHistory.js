@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import { useDokter } from '../../contexts/DokterContext';  // Menggunakan DokterContext
-import { useJadwal } from '../../contexts/JadwalContext';  // Menggunakan JadwalContext
-import { usePoli } from '../../contexts/PoliContext';  // Menggunakan PoliContext
+import { useDokter } from '../../contexts/DokterContext';
+import { useJadwal } from '../../contexts/JadwalContext';
+import { usePoli } from '../../contexts/PoliContext';
 import BackButton from '../../components/pasienbutton/BackButton';
 import './UserHistory.css';
 
 const UserHistory = () => {
   const { user } = useUser();
-  const { polies: contextPolies } = usePoli(); 
-  const { dokters } = useDokter();  // Mengambil data dokter dari DokterContext
-  const { jadwals } = useJadwal();  // Mengambil data jadwal dari JadwalContext
+  const { polies: contextPolies } = usePoli();
+  const { dokters } = useDokter();
+  const { jadwals } = useJadwal();
   const [histories, setHistories] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -24,7 +24,6 @@ const UserHistory = () => {
 
   const userId = user ? user.user_id : null;
 
-  // Fetch riwayat janji temu
   useEffect(() => {
     if (userId) {
       const fetchHistory = async () => {
@@ -71,16 +70,14 @@ const UserHistory = () => {
 
       <div className="history-container">
         {histories.length > 0 ? (
-          histories.map((history, index) => {
-            // Pastikan data dokters, jadwals, dan polies sudah ada
-            const dokter = dokters?.find((doc) => doc.id === history.dokter_id) || { id: history.dokter_id };  // Cari dokter dari context
-            const jadwal = jadwals?.find((schedule) => schedule.id === history.jadwal_id) || { id: history.jadwal_id };  // Cari jadwal dari context
+          histories.map((history) => {
+            const dokter = dokters?.find((doc) => doc.id === history.dokter_id) || { id: history.dokter_id };
+            const jadwal = jadwals?.find((schedule) => schedule.id === history.jadwal_id) || { id: history.jadwal_id };
             const poli = contextPolies?.find((p) => p.id === history.polis_id) || { id: history.polis_id };
 
-            // Periksa apakah dokter, jadwal, dan poli ditemukan, jika tidak, tampilkan id
             const dokterNama = dokter ? dokter.nama || dokter.id : dokter.id;
-            const jadwalNama = jadwal && jadwal.tanggal 
-              ? `${new Date(jadwal.tanggal).toLocaleDateString()} (${new Date('1970-01-01T' + jadwal.jam).toLocaleTimeString()})` 
+            const jadwalNama = jadwal && jadwal.tanggal
+              ? `${new Date(jadwal.tanggal).toLocaleDateString()} (${new Date('1970-01-01T' + jadwal.jam).toLocaleTimeString()})`
               : jadwal.id;
             const poliNama = poli ? poli.nama || poli.id : poli.id;
 

@@ -1,11 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
-  const { user } = useUser(); // Ambil user dari context
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
   const userId = user ? user.user_id : null;
+
+  const handleLogout = () => {
+    logout(); // Panggil fungsi logout untuk reset data
+    navigate('/LoginPage'); // Arahkan ke halaman login
+  };
 
   return (
     <div className="user-dashboard">
@@ -30,6 +36,9 @@ const UserDashboard = () => {
             <p>Histori Pasien</p>
           </Link>
         </div>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </div>
   );
